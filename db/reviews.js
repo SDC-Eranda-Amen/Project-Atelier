@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'),
+  autoIncrement = require('mongoose-auto-increment');;
 const db = require('./index.js');
 
 const reviewsSchema = new mongoose.Schema({
-  product_id: String,
-  review_id: String,
+  product_id: Number,
+  review_id: Number,
   rating: Number,
   summary: String,
   recommend: Boolean,
@@ -19,6 +20,7 @@ const reviewsSchema = new mongoose.Schema({
   }],
 }, {collection: 'official_reviews_list'});
 
+reviewsSchema.plugin(autoIncrement.plugin, 'official_reviews_list');
 
 //Might need something like this
 // {
