@@ -17,14 +17,14 @@ const reviewsSchema = new mongoose.Schema({
       id: Number,
       url: String
   }],
-});
+}, {collection: 'official_reviews_list'});
 
 
 //Might need something like this
 // {
 //   timestamps: true
 // }
-const ReviewList = mongoose.model('ReviewList', reviewsSchema);
+const ReviewList = mongoose.model('official_review_list', reviewsSchema);
 
 module.exports = ReviewList;
 
