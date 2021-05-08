@@ -1,5 +1,5 @@
-const mongoose = require('mongoose'),
-  autoIncrement = require('mongoose-auto-increment');;
+const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 const db = require('./index.js');
 
 const reviewsSchema = new mongoose.Schema({
@@ -20,13 +20,10 @@ const reviewsSchema = new mongoose.Schema({
   }],
 }, {collection: 'official_reviews_list'});
 
-reviewsSchema.plugin(autoIncrement.plugin, 'official_reviews_list');
 
-//Might need something like this
-// {
-//   timestamps: true
-// }
 const ReviewList = mongoose.model('official_review_list', reviewsSchema);
+autoIncrement.initialize(mongoose.connection);
+reviewsSchema.plugin(autoIncrement.plugin, {model: 'official_reviews_list', field:'review_id'});
 
 module.exports = ReviewList;
 

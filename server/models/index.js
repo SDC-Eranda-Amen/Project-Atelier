@@ -1,6 +1,7 @@
 const db = require('../../db');
 const Meta = require('../../db/meta.js');
 const ReviewsList = require('../../db/reviews.js');
+const Characteristics = require('../../db/chars.js')
 module.exports = {
   getReviews: (page, count, sort, product, res) => {
     var response = {product, page, count};
@@ -11,7 +12,7 @@ module.exports = {
     // if sort === 'newest', sort = 'date'?
     if (sort === 'newest') sort = 'date';
     // query ReviewsList for all reviews with product_id, sort by the sort argument
-    ReviewsList.find({product_id: product.toString()}).sort({[sort]: -1}).exec().then((results)  => {
+    ReviewsList.find({product_id: product}).sort({[sort]: -1}).exec().then((results)  => {
       // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
       // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
       var reviewRange = results.slice(resultRangeStart, resultRangeEnd + 1);
@@ -48,39 +49,88 @@ module.exports = {
           response.recommended[recommend] = 1;
         }
       }
-      // iterate over result[0].characteristics
-      for (var j = 0; j < result[0].characteristics.length; j++) {
-        // char is result[0].characteristics[j]
-        var char = result[0].characteristics[j];
-        // var total is 0
-        var total = 0;
-        // charMeta {id: char.id}
-        var charMeta = {id:Number(char.id)};
-        // iterate over char reviews
-        for (var k = 0; k < char.reviews.length; k++) {
-          // total += review.value
-          total += char.reviews[k].value;
-        }
-        // charMeta.value = total / char.reviews.length
-        charMeta.value = (total / char.reviews.length).toString();
-        // response.characteristics[char.name] = charMeta
-        response.characteristics[char.name] = charMeta;
+      // make a query to characteristics collection for product_id// maybe change to Number?
+      Characteristics.find({product_id: id.toString()}).exec()
+      .then((chars) => {
+        // iterate over chars
+        for (var j = 0; j < chars.length; j++) {
+          // char is result[0].characteristics[j]
+          var char = chars[i];
+          // var total is 0
+          var total = 0;
+          // charMeta {id: char.id}
+          var charMeta = {id:Number(char.id)};
+          // iterate over char reviews
+          for (var k = 0; k < char.reviews.length; k++) {
+            // total += review.value
+            total += char.reviews[k].value;
+          }
+          // charMeta.value = total / char.reviews.length
+          charMeta.value = (total / char.reviews.length).toString();
+          // response.characteristics[char.name] = charMeta
+          response.characteristics[char.name] = charMeta;
 
-      }
-      res.send(response);
+        }
+      })
+      .catch((err) => {
+        res.status(500).send('ERROR FINDING PRODUCT');
+      })
 
     })
     .catch((err) => {
       res.status(500).send(err)
     })
+    res.send(response);
   }, // func queries database to get meta-data for a single product's reviews
-  postReview: () => {
+  postReview: (body, res) => {
 
-  }, // func queries database to add a review
-  addHelpful: () => {
 
-  }, // func queries database to add to a review's helpful count
-  reportReview: () => {
+    ReviewsList.create({
+      product_id: body.product_id,
+      rating: body.rating,
+      summary: body.summary,
+      recommend: body.recommend,
+      body: body.body,
+      date: new Date().toDateString(),
+      reviewer_name: body.name,
+      helpfulness: 0,
+      review_photos: body.photos,
+    })
+    .then((result) => {
+      console.log('RESULT: ', result);
+      // iterate over body.characteristics, and make a query to push {newReviewId, value}
+      var keys = Object.keys(body.characteristics)
 
-  } // func queries database to make
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        Characteristics.findOneAndUpdate({id: key},
+          {$push: {reviews: {id: result.review_id, value: body.characteristics[key]}}}).exec()
+          .then((charPushResult) => {
+            console.log('CHAR PUSH RESULT: ', charPushResult)
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          })
+      }
+    })
+    .catch((err) => {
+      res.status(501).send(err);
+    });
+  },
+  addHelpful: (id,res) => {
+    // find review by id and increment helpful property
+    ReviewsList.findOneAndUpdate({product_id: id}, {$inc: {helpfulness: 1}}).exec()
+  },
+  reportReview: (id,res) => {
+    // find review by id and update reported property to true
+    ReviewsList.findOneAndUpdate({product_id: id}, {reported: true}).exec()
+    .then((result) => {
+      console.log('report review result:', result);
+      res.send('REVIEW REPORTED');
+    })
+    .catch((err) => {
+      res.status(500).send('COULD NOT UPDATE REVIEW');
+    })
+
+  }
 }

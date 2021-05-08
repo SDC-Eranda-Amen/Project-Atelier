@@ -1,5 +1,4 @@
 const model = require('../models');
-
 // calls model query funcs and handles response
 module.exports = {
   getReviews: (req, res) => {
