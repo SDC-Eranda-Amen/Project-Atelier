@@ -18,12 +18,12 @@ const reviewsSchema = new mongoose.Schema({
       id: Number,
       url: String
   }],
-}, {collection: 'official_reviews_list'});
+}, {collection: 'reviewslists'});
 
 
-const ReviewList = mongoose.model('official_review_list', reviewsSchema);
+const ReviewList = mongoose.model('reviewslists', reviewsSchema);
 autoIncrement.initialize(mongoose.connection);
-reviewsSchema.plugin(autoIncrement.plugin, {model: 'official_reviews_list', field:'review_id'});
+reviewsSchema.plugin(autoIncrement.plugin, {model: 'reviewslists', field:'review_id'});
 
 module.exports = ReviewList;
 
