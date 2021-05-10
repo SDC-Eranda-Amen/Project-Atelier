@@ -3,8 +3,8 @@ const autoIncrement = require('mongoose-auto-increment');
 const db = require('./index.js');
 
 const reviewsSchema = new mongoose.Schema({
-  product_id: Number,
-  review_id: Number,
+  product_id: String,
+  review_id: String,
   rating: Number,
   summary: String,
   recommend: Boolean,
@@ -18,12 +18,10 @@ const reviewsSchema = new mongoose.Schema({
       id: Number,
       url: String
   }],
-}, {collection: 'reviewslists'});
+}, {collection: 'reviewlists'});
 
 
-const ReviewList = mongoose.model('reviewslists', reviewsSchema);
-autoIncrement.initialize(mongoose.connection);
-reviewsSchema.plugin(autoIncrement.plugin, {model: 'reviewslists', field:'review_id'});
+const ReviewList = mongoose.model('reviewlists', reviewsSchema);
 
 module.exports = ReviewList;
 
