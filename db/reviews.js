@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 const db = require('./index.js');
 
 const reviewsSchema = new mongoose.Schema({
@@ -17,14 +18,10 @@ const reviewsSchema = new mongoose.Schema({
       id: Number,
       url: String
   }],
-}, {collection: 'official_reviews_list'});
+}, {collection: 'reviewlists'});
 
 
-//Might need something like this
-// {
-//   timestamps: true
-// }
-const ReviewList = mongoose.model('official_review_list', reviewsSchema);
+const ReviewList = mongoose.model('reviewlists', reviewsSchema);
 
 module.exports = ReviewList;
 

@@ -1,37 +1,37 @@
 const db = require('../../db');
 const Meta = require('../../db/meta.js');
 const ReviewsList = require('../../db/reviews.js');
+const Characteristics = require('../../db/chars.js')
+const { v4: uuidv4 } = require('uuid');
+const getReviews = require('./getReviews.js');
+const getMeta = require('./getMeta.js');
+const postReview = require('./postReview.js');
 module.exports = {
-  getReviews: (page, count, sort, product, res) => {
-    var response = {product, page, count};
-    // find the range of reviews that you want to return in results
-    var resultRangeStart = (count*page) - count;
-    var resultRangeEnd = (count*page);
-
-    // if sort === 'newest', sort = 'date'?
-    if (sort === 'newest') sort = 'date';
-    // query ReviewsList for all reviews with product_id, sort by the sort argument
-    ReviewsList.find({product_id: product.toString()}).sort({[sort]: -1}).exec().then((results)  => {
-      // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
-      // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
-      var reviewRange = results.slice(resultRangeStart, resultRangeEnd + 1);
-      response.results = reviewRange;
-      res.send(response);
-    }).catch((err) => {
-      res.status(500).send(err);
-    });
-
+  getReviews,
+  getMeta,
+  postReview,
+  addHelpful: (id,res) => {
+    // find review by id and increment helpful property
+    ReviewsList.findOneAndUpdate({review_id: id}, {$inc: {helpfulness: 1}}).exec()
+    .then((result) => {
+      console.log('ADD HELPFUL RESULT: ', result);
+      res.send('MARKED AS HELPFUL')
+    })
+    .catch((err) => {
+      console.log('ADD HELPFUL ERROR: ', err);
+    })
   },
-  getReviewMeta:() => {
+  reportReview: (id,res) => {
+    // find review by id and update reported property to true
+    ReviewsList.findOneAndUpdate({review_id: id}, {reported: true}).exec()
+    .then((result) => {
+      console.log('REPORT REVIEW RESULT:', result);
+      res.send('REVIEW REPORTED');
+    })
+    .catch((err) => {
+      console.log('REPORT REVIEW ERROR: ', err);
+      res.status(500).send('COULD NOT UPDATE REVIEW');
+    })
 
-  }, // func queries database to get meta-data for a single product's reviews
-  postReview: () => {
-
-  }, // func queries database to add a review
-  addHelpful: () => {
-
-  }, // func queries database to add to a review's helpful count
-  reportReview: () => {
-
-  } // func queries database to make
+  }
 }
