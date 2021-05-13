@@ -15,5 +15,8 @@ module.exports = {
   },
   reportReview: (req, res) => {
     model.reportReview(req.body.id, res);
+  },
+  verifyLoader: (req, res) => {
+    res.sendFile('./loaderio-66c6545b6fbcbe0d50d8e48983cf0bab.txt');
   }
 };

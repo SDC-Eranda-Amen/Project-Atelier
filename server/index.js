@@ -8,7 +8,6 @@ app.use(require('morgan')('dev'));
 app.use(express.json());
 
 app.use('/', require('./routes'));
-
 const port = process.env.PORT || 1128;
 
 app.listen(port, () => {
