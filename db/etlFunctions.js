@@ -2,12 +2,7 @@ const csv = require('csv-parse');
 const fs = require('fs');
 const db = require('./index');
 const ReviewList = require('./reviews')
-// const ProductsMeta = require('./meta.js');
-// const Characteristics = require('./characteristics.js');
-// read reviews, and create a new record for each of them
-// for each review, query to findOrCreate a new product record based on product id
-// increment the correct rating prop in product record
-// increment the correct recommended prop in product record
+
 fs.createReadStream(__dirname + '/reviewsTest.csv')
   .pipe(csv({columns: true, relax_column_count: true}))
   .on('data', (row) => {
