@@ -1,4 +1,5 @@
 const model = require('../models');
+const path = require('path');
 // calls model query funcs and handles response
 module.exports = {
   getReviews: (req, res) => {
@@ -17,6 +18,6 @@ module.exports = {
     model.reportReview(req.body.id, res);
   },
   verifyLoader: (req, res) => {
-    res.sendFile('./loaderio-66c6545b6fbcbe0d50d8e48983cf0bab.txt');
+    res.sendFile(path.join(__dirname, 'loaderio-66c6545b6fbcbe0d50d8e48983cf0bab.txt'));
   }
 };
