@@ -17,10 +17,9 @@ module.exports = (page, count, sort, product, res) => {
   ReviewsList.find({product_id: product}).sort({[sort]: -1}).exec().then((results)  => {
     // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
     // get a slice of resultRangeStart to resultRangeEnd from the results, and make it the results property of response
-    console.log(results);
     var reviewRange = results.slice(resultRangeStart, resultRangeEnd + 1);
     response.results = reviewRange;
-    res.send(response);
+    return response;
 
   }).catch((err) => {
     res.status(500).send(err);

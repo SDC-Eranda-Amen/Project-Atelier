@@ -6,7 +6,6 @@ module.exports = async (body, res) => {
 
   var unique_id = uuidv4();
   await reviewListPost(body, unique_id, res);
-  console.log('BODY: ', body);
   var keys = Object.keys(body.characteristics)
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
@@ -31,11 +30,9 @@ const reviewListPost = (body, unique_id, res) => {
       photos: body.photos,
     })
     .then((result) => {
-      console.log('REVIEW LIST POST RESULT: ', result)
       resolve(result);
     })
     .catch((err) => {
-      console.log('ERROR: ', err)
       res.status(500).send(err);
       reject(err);
     })
@@ -46,12 +43,10 @@ const characteristicsPost = (key, chars, unique_id, res) => {
     Characteristics.findOneAndUpdate({id: key},
       {$push: {reviews: {id: unique_id, value: chars[key]}}}).exec()
       .then((charPushResult) => {
-        console.log('CHAR PUSH RESULT: ', charPushResult)
         resolve(charPushResult);
       })
       .catch((err) => {
         res.status(500).send(err);
-        console.log('CHAR POST ERROR: ', err);
         reject(err);
       })
   })
@@ -61,12 +56,10 @@ const metaPost = (id, rating, recommend, res) => {
   return new Promise((resolve, reject) => {
     Meta.findOneAndUpdate({_id: id}, {$push: {meta: {rating: rating.toString(), recommend: Boolean(recommend)}}})
     .then((result) => {
-      console.log('META PUSH RESULT: ', result);
       resolve(result);
     })
     .catch((err) => {
       res.status(500).send(err);
-      console.log('META PUSH ERROR: ', err);
       reject(err)
     })
   })
