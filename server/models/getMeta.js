@@ -4,9 +4,11 @@ module.exports = async (id, res) => {
   var response = {product_id: id, ratings: {}, recommended:{}, characteristics:{}};
   // create
   response = await findMeta(id, response, res);
+  console.log('func1: ', response);
   response = await findChars(id, response, res)
+  console.log('func2: ', response);
 }
-const findMeta = (id, response, res) => {
+const findMeta = (id, response) => {
   return new Promise((resolve, reject) => {
     Meta.find({_id: id.toString()}).exec()
     .then((result) => {
